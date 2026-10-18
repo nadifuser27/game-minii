@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tebak Angka - Mini Game</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 20px;
+      display: grid; place-items: center;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #f8fafc;
+      background: radial-gradient(circle at top left, #312e81, transparent 45%),
+                  linear-gradient(135deg, #0f172a, #111827 55%, #1e1b4b);
+    }
+    .game {
+      width: min(100%, 430px); padding: 28px 22px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 26px; text-align: center;
+      background: rgba(255,255,255,.08);
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+      backdrop-filter: blur(14px);
+    }
+    .emoji { font-size: 52px; margin-bottom: 8px; }
+    h1 { margin: 0 0 10px; font-size: clamp(26px, 7vw, 34px); }
+    .subtitle { color: #cbd5e1; line-height: 1.6; margin: 0 0 22px; }
+    .stats { display: flex; justify-content: center; gap: 10px; margin-bottom: 22px; }
+    .stat { flex: 1; padding: 12px 8px; border-radius: 14px; background: rgba(15,23,42,.6); }
+    .stat strong { display: block; font-size: 22px; color: #a5b4fc; }
+    .stat span { font-size: 12px; color: #cbd5e1; }
+    input {
+      width: 100%; padding: 15px; border-radius: 13px;
+      border: 1px solid #64748b; background: #0f172a; color: white;
+      font: inherit; font-size: 18px; text-align: center; outline: none;
+    }
+    input:focus { border-color: #a5b4fc; box-shadow: 0 0 0 3px rgba(165,180,252,.15); }
+    button {
+      width: 100%; border: 0; border-radius: 13px; padding: 14px;
+      margin-top: 12px; font: inherit; font-weight: 700; cursor: pointer;
+      transition: transform .15s, opacity .15s;
+    }
+    button:active { transform: scale(.98); }
+    .primary { color: #111827; background: linear-gradient(90deg, #a5b4fc, #c4b5fd); }
+    .secondary { color: #e2e8f0; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.12); }
+    #message { min-height: 52px; margin: 18px 0 0; color: #e2e8f0; line-height: 1.5; }
+    .hint { margin: 8px 0 0; color: #94a3b8; font-size: 12px; }
+    footer { margin-top: 20px; color: #94a3b8; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <main class="game">
+    <div class="emoji">🎯</div>
+    <h1>Tebak Angka</h1>
+    <p class="subtitle">Aku sudah memilih angka dari <b>1 sampai 100</b>.<br>Bisakah kamu menebaknya?</p>
+
+    <div class="stats">
+      <div class="stat"><strong id="attempts">0</strong><span>Percobaan</span></div>
+      <div class="stat"><strong>1–100</strong><span>Rentang angka</span></div>
+    </div>
+
+    <form id="guessForm">
+      <input id="guess" type="number" min="1" max="100" placeholder="Masukkan angka..." required aria-label="Tebakan angka">
+      <button class="primary" type="submit">TEBAK SEKARANG ✨</button>
+    </form>
+    <p id="message" role="status">Ayo mulai! Masukkan tebakan pertamamu.</p>
+    <button class="secondary" id="restart" type="button">🔄 Main Lagi</button>
+    <p class="hint">Tips: baca petunjuk setelah setiap tebakan.</p>
+    <footer>Dibuat dengan HTML, CSS & JavaScript</footer>
+  </main>
+
+  <script>
+    const form = document.getElementById('guessForm');
+    const input = document.getElementById('guess');
+    const message = document.getElementById('message');
+    const attemptsText = document.getElementById('attempts');
+    const restart = document.getElementById('restart');
+
+    let answer;
+    let attempts;
+    let finished;
+
+    function startGame() {
+      answer = Math.floor(Math.random() * 100) + 1;
+      attempts = 0;
+      finished = false;
+      attemptsText.textContent = attempts;
+      message.textContent = 'Ayo mulai! Masukkan tebakan pertamamu.';
+      input.value = '';
+      input.disabled = false;
+      input.focus();
+    }
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      if (finished) return;
+
+      const guess = Number(input.value);
+      if (!Number.isInteger(guess) || guess < 1 || guess > 100) {
+        message.textContent = 'Masukkan angka bulat dari 1 sampai 100, ya!';
+        return;
+      }
+
+      attempts++;
+      attemptsText.textContent = attempts;
+
+      if (guess === answer) {
+        message.textContent = `🎉 Benar! Angkanya ${answer}. Kamu berhasil dalam ${attempts} percobaan!`;
+        finished = true;
+        input.disabled = true;
+      } else if (guess < answer) {
+        message.textContent = '📈 Terlalu kecil! Coba angka yang lebih besar.';
+      } else {
+        message.textContent = '📉 Terlalu besar! Coba angka yang lebih kecil.';
+      }
+      if (!finished) {
+        input.select();
+      }
+    });
+
+    restart.addEventListener('click', startGame);
+    startGame();
+  </script>
+</body>
+</html>
